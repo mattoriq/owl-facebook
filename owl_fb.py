@@ -7,8 +7,8 @@ g = Graph()
 owl_uri = "http://facebookontology.org/"
 
 #object property
-friend_with = URIRef('http://facebookontology.org/friend_with')
-# member_of = URIRef('http://facebookontology.org/member_of')
+friend_with = FOAF.knows
+member_of = FOAF.member
 posted = URIRef('http://facebookontology.org/posted')
 is_tagging = URIRef('http://facebookontology.org/is_tagging')
 liked = URIRef('http://facebookontology.org/liked')
@@ -36,11 +36,12 @@ g.add((ali, FOAF.nick, Literal("ali")))
 g.add((ali, FOAF.name, Literal("Ali Dali")))
 
 # sample data (friends relation)
-g.add((ani, friend_with, budi))
 g.add((ani, friend_with, ali))
 g.add((bob, friend_with, ali))
 g.add((budi, friend_with, bob))
-g.remove((ani, friend_with, budi))
+g.add((budi, friend_with, ani))
+g.add((budi, friend_with, ali))
+g.remove((budi, friend_with, ali))
 
 # sample data (group)
 chess_group = URIRef('http://facebookontology.org/chess_group')
@@ -48,8 +49,8 @@ g.add((chess_group, RDF.type, FOAF.Group))
 g.add((chess_group, FOAF.name, Literal("Chess Group")))
 
 # sample data (membership)
-g.add((ani, FOAF.member, chess_group))
-g.add((ali, FOAF.member, chess_group))
+g.add((chess_group, member_of, ani))
+g.add((chess_group, member_of, ali))
 
 # sample data (image)
 gambar_pantai = URIRef('http://facebookontology.org/gambar_pantai')
@@ -83,9 +84,7 @@ WHERE {
 group_member_query = """
 SELECT ?name ?group
 WHERE {
-    ?n rdf:type foaf:Person .
-    ?g rdf:type foaf:Group .
-    ?n foaf:member ?g .
+    ?g foaf:member ?n .
     ?n foaf:name ?name .
     ?g foaf:name ?group .
 }"""
@@ -109,27 +108,26 @@ WHERE {
     ?t foaf:name ?tagged .
 }"""
 
-print("-----------------")
-
 def print_all_names():
+    print("-----------------")
     qry = g.query(all_names_query)
     for x in qry:
         print(f"{x.name}")
 
 def print_all_groups():
-# print("hello")
-# end = time.time()
-# print(end - start)
+    print("-----------------")
     qry = g.query(all_groups_query)
     for x in qry:
         print(f"{x.group}")
 
 def print_friends():
+    print("-----------------")
     qry = g.query(friend_query)
     for x in qry:
         print(f"{x.aname} is friend with {x.bname}")
 
 def print_memberships():
+    print("-----------------")
     start = time.time()
     qry = g.query(group_member_query)
     for x in qry:
@@ -138,9 +136,11 @@ def print_memberships():
     print(end - start)
 
 def print_custom_query():
+    print("-----------------")
     qry = g.query(unresponsive_person_query)
     for x in qry:
         print(f"Uploader gambar: {x.poster}, Gambar: {x.img}, Orang yang ditag: {x.tagged}")
 
-# print_friends()
+print_friends()
 print_custom_query()
+print_memberships()
