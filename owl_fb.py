@@ -12,7 +12,6 @@ member_of = FOAF.member
 posted = URIRef('http://facebookontology.org/posted')
 is_tagging = URIRef('http://facebookontology.org/is_tagging')
 liked = URIRef('http://facebookontology.org/liked')
-friend_with = URIRef('http://facebookontology.org/friend_with')
 
 # sample data (person)
 ani = URIRef('http://facebookontology.org/ani')
@@ -69,7 +68,7 @@ g.bind("rdf", RDF)
 friend_query = """
 SELECT ?aname ?bname
 WHERE {
-    ?a <http://facebookontology.org/friend_with> ?b .
+    ?a foaf:knows ?b .
     ?a foaf:name ?aname .
     ?b foaf:name ?bname .
 }"""
@@ -101,7 +100,7 @@ SELECT ?img ?poster ?tagged
 WHERE {
     ?p <http://facebookontology.org/posted> ?i .
     ?i <http://facebookontology.org/is_tagging> ?t .
-    ?p <http://facebookontology.org/friend_with> ?t .
+    ?p foaf:knows ?t .
     FILTER NOT EXISTS { ?t <http://facebookontology.org/liked> ?i } .
     ?i foaf:name ?img .
     ?p foaf:name ?poster .
